@@ -60,7 +60,7 @@ function App() {
   useEffect(() => {
     const initialBotMessage = {
       id: 'initial_bot_msg_' + Date.now(),
-      text: "Olá! Escolher um produto novo pode ser complicado com tantas opções, funções e preços diferentes, não é? Eu sou o Pick2Me e estou aqui para simplificar isso para si. 😊 Para começar, diga-me qual produto ou categoria tem em mente.",
+      text: "Olá! Escolher um produto novo pode ser complicado com tantas opções, funções e preços diferentes, não é? Eu sou o Pick2Me e estou aqui para simplificar isso. 😊 Para começar, me diga algum produto ou categoria que tem em mente para pesquisar.",
       sender: 'bot',
       type: 'text',
     };
@@ -150,7 +150,7 @@ function App() {
     const systemInstruction = {
       role: "user",
       parts: [{text: `Você é 'Pick2Me', um chatbot consultor de compras amigável, empático e especialista.
-1.  **Tom de Voz e Personalidade:** Seu papel é ser um guia tranquilizador num mundo de compras confuso. Comece reconhecendo a dificuldade do utilizador: a sobrecarga de opções, a complexidade das funções e a variação de preços. Use uma linguagem como "Sei que escolher pode ser complicado com tantas opções, mas estou aqui para ajudar" ou "Vamos navegar juntos por este mundo de opções para encontrar o ideal para si".
+1.  **Tom de Voz e Personalidade:** Seu papel é ser um guia tranquilizador num mundo de compras confuso. Comece reconhecendo a dificuldade do utilizador: a sobrecarga de opções, a complexidade das funções e a variação de preços. Use uma linguagem como "Sei que escolher pode ser complicado com tantas opções, mas estou aqui para ajudar" ou "Vamos navegar juntos por este mundo de opções para encontrar o ideal para você".
 2.  **Objetivo Principal:** Ajudar utilizadores a refinar suas necessidades e, se possível, identificar MODELOS ESPECÍFICOS de produtos que se encaixem perfeitamente no que eles procuram.
 3.  **Coleta de Detalhes:** Seja um bom ouvinte. Se a descrição for vaga (ex: 'quero um telemóvel'), faça perguntas abertas e guiadas para entender o que realmente importa para o utilizador. Pergunte sobre orçamento, para que ele vai usar o produto, funcionalidades indispensáveis, e marcas que ele gosta ou não.
 4.  **Sugestão de Busca de Modelos:** APENAS QUANDO sentir que tem detalhes suficientes E/OU um ou mais NOMES DE MODELOS ESPECÍFICOS identificados, confirme o seu entendimento de forma clara. Sugira então procurar mais informações sobre esses modelos usando a tag: '[BUSCAR_MODELOS_PARA: Nome do Modelo 1, Nome do Modelo 2, ...]'.
@@ -161,7 +161,7 @@ Mantenha sempre as respostas em português.`}]
     contents.unshift(systemInstruction);
 
     const payload = { contents: contents, generationConfig: {} };
-    const apiKey = ""; 
+    const apiKey = "AIzaSyDSEfpHWXVpGMAvcsCeAMKXe3NKEiLIl0k"; 
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
     
     try {
@@ -207,7 +207,7 @@ Mantenha sempre as respostas em português.`}]
 Formate a resposta em português como uma lista numerada para cada modelo: 'Aqui estão algumas informações sobre os modelos que encontrei:\\n\\n1. **[Nome do Modelo]**\\n   *Características Principais:* [Breve lista ou descrição]\\n   *Faixa de Preço Típica (Simulada):* [Preço]\\n   *Link Exemplo:* https://www.dicionarioinformal.com.br/exemplos/d%C3%AA/\\n\\n2. ...'`;
       
       const payload = { contents: [{ role: "user", parts: [{ text: modelInfoPrompt }] }], generationConfig: {} };
-      const apiKey = ""; 
+      const apiKey = "AIzaSyDSEfpHWXVpGMAvcsCeAMKXe3NKEiLIl0k"; 
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
       const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       
