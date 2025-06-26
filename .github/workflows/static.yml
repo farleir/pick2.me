@@ -16,7 +16,6 @@ permissions:
   id-token: write
 
 # Permite apenas uma publicação concorrente, ignorando execuções em fila.
-# No entanto, NÃO cancela publicações em andamento para garantir que terminem.
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -32,30 +31,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         
-      # Passo Adicional: Configurar o ambiente Node.js para compilar a aplicação React
+      # Configurar o ambiente Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20 # Pode ajustar para a versão do Node.js que usa no seu projeto
+          node-version: 20 # Pode ajustar para a versão do Node.js que usa
 
-      # Passo Adicional: Instalar as dependências do projeto
+      # Alteração Chave: Adicionado 'working-directory' para os comandos npm
+      # Substitua 'pick2me-app' pelo nome exato da pasta do seu projeto se for diferente.
       - name: Install dependencies
         run: npm install
+        working-directory: ./pick2me-app 
 
-      # Passo Adicional: Compilar a aplicação React
+      # Compilar a aplicação React, também dentro da pasta de trabalho correta
       - name: Build
-        run: npm run build # Este comando executa o script "build" do seu package.json
+        run: npm run build
+        working-directory: ./pick2me-app
 
       # Configurar o GitHub Pages
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # Alteração Chave: Carregar o artefacto da pasta de compilação (build)
+      # Carregar o artefacto da pasta de compilação (build) que está dentro da subpasta do projeto
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Carrega apenas o conteúdo da pasta 'build', que é o resultado da compilação do React
-          path: './build'
+          # O caminho agora aponta para a pasta 'build' dentro da sua pasta do projeto
+          path: './pick2me-app/build'
 
       # Publicar no GitHub Pages
       - name: Deploy to GitHub Pages
