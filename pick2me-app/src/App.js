@@ -80,7 +80,7 @@ function App() {
         contents: [{ role: "user", parts: [{ text: promptText }] }],
         generationConfig: {} 
       };
-      const apiKey = ""; 
+      const apiKey = "AIzaSyDSEfpHWXVpGMAvcsCeAMKXe3NKEiLIl0k"; 
       const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
       
       const response = await fetch(apiUrl, {
