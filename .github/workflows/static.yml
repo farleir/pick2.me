@@ -37,26 +37,26 @@ jobs:
         with:
           node-version: 20 # Pode ajustar para a versão do Node.js que usa
 
-      # Alteração Chave: O 'working-directory' foi corrigido para 'pick2me-app'
+      # Alteração Chave: O 'working-directory' foi atualizado para corresponder ao caminho no log de erro
       - name: Install dependencies
         run: npm install
-        working-directory: ./pick2me-app 
+        working-directory: ./pick2.me 
 
       # Compilar a aplicação React, também dentro da pasta de trabalho correta
       - name: Build
         run: npm run build
-        working-directory: ./pick2me-app
+        working-directory: ./pick2.me
 
       # Configurar o GitHub Pages
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # Carregar o artefacto da pasta de compilação (build) que está dentro da sua pasta 'pick2me-app'
+      # Carregar o artefacto da pasta de compilação (build) que está dentro da sua pasta 'pick2.me'
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # O caminho agora aponta para a pasta 'build' dentro da sua pasta 'pick2me-app'
-          path: './pick2me-app/build'
+          # O caminho agora aponta para a pasta 'build' dentro da sua pasta do projeto
+          path: './pick2.me/build'
 
       # Publicar no GitHub Pages
       - name: Deploy to GitHub Pages
