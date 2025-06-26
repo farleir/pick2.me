@@ -1,6 +1,6 @@
 {
   "name": "pick2me-app",
-  "homepage": "[https://pick2.me](https://pick2.me)",
+  "homepage": "[https://pick2.me]",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
