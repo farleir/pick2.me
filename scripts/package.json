@@ -1,41 +1,64 @@
-{
-  "name": "pick2me-app",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "tailwindcss": "^3.4.4"
-  }
-}
+# Fluxo de trabalho para publicar conteúdo estático no GitHub Pages
+name: Deploy static content to Pages
+
+on:
+  # Executa em pushes para o ramo principal (main)
+  push:
+    branches: ["main"]
+
+  # Permite que você execute este fluxo de trabalho manualmente a partir do separador Actions
+  workflow_dispatch:
+
+# Define as permissões do GITHUB_TOKEN para permitir a publicação no GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Permite apenas uma publicação concorrente, ignorando execuções em fila.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Trabalho único de publicação
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      # Configurar o ambiente Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20 # Pode ajustar para a versão do Node.js que usa
+
+      # Alteração Chave: 'working-directory' aponta para a pasta 'pick2.me'
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./pick2.me 
+
+      # Compilar a aplicação React, também dentro da pasta de trabalho correta
+      - name: Build
+        run: npm run build
+        working-directory: ./pick2.me
+
+      # Configurar o GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # Carregar o artefacto da pasta de compilação, que está dentro da subpasta 'pick2.me'
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # O caminho agora aponta para a pasta 'build' dentro da pasta do projeto 'pick2.me'
+          path: './pick2.me/build'
+
+      # Publicar no GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
