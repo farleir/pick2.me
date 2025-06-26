@@ -148,7 +148,6 @@ function App() {
 
   // Função para chamar a API Gemini para a conversa principal
   const callGeminiAPI = async (currentChatHistory) => {
-    // **PROMPT MELHORADO AQUI**
     const systemInstruction = {
       role: "user",
       parts: [{text: `Você é 'Pick2Me', um chatbot consultor de compras amigável, empático e especialista. Seu contexto é o Brasil.
@@ -208,13 +207,13 @@ function App() {
       if (modelList.length === 0) {
           throw new Error("Nenhum nome de modelo válido foi fornecido para a busca.");
       }
-      // **PROMPT MELHORADO AQUI**
+      // **PROMPT MELHORADO AQUI para gerar links reais**
       const modelInfoPrompt = `Para cada um dos seguintes modelos de produtos: ${modelList.join(', ')}, forneça:
 - Nome do Modelo (confirme o nome).
 - Um breve resumo de suas características principais (2-3 pontos).
 - Uma faixa de preço típica simulada no mercado brasileiro (ex: R$ 2.800 - R$ 3.200).
-- Um link de exemplo para uma página de produto ou review de um site brasileiro (ex: .com.br, ou de uma loja conhecida no Brasil). Forneça o URL completo e direto, como em 'https://www.magazineluiza.com.br/produto'.
-Formate a resposta em português do Brasil como uma lista numerada para cada modelo: 'Aqui estão algumas informações sobre os modelos que encontrei:\\n\\n1. **[Nome do Modelo]**\\n   *Características Principais:* [Breve lista ou descrição]\\n   *Faixa de Preço Típica (Simulada):* [Preço em R$]\\n   *Link Exemplo:* https://www.exemplo.com.br/produto\\n\\n2. ...'`;
+- Um link de busca no Google Shopping. Para criar o link, pegue o nome do modelo, substitua espaços por '+' e anexe a 'https://www.google.com/search?tbm=shop&q='. Exemplo para "Samsung Galaxy S24": https://www.google.com/search?tbm=shop&q=Samsung+Galaxy+S24
+Formate a resposta em português do Brasil como uma lista numerada para cada modelo: 'Aqui estão algumas informações sobre os modelos que encontrei:\\n\\n1. **[Nome do Modelo]**\\n   *Características Principais:* [Breve lista ou descrição]\\n   *Faixa de Preço Típica (Simulada):* [Preço em R$]\\n   *Pesquisar Preços:* https://support.google.com/faqs/answer/2987537?hl=pt\\n\\n2. ...'`;
       
       const payload = { contents: [{ role: "user", parts: [{ text: modelInfoPrompt }] }], generationConfig: {} };
       const apiKey = "AIzaSyDSEfpHWXVpGMAvcsCeAMKXe3NKEiLIl0k"; 
