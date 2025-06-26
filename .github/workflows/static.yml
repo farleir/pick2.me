@@ -37,8 +37,7 @@ jobs:
         with:
           node-version: 20 # Pode ajustar para a versão do Node.js que usa
 
-      # Alteração Chave: Adicionado 'working-directory' para os comandos npm
-      # Substitua 'pick2me-app' pelo nome exato da pasta do seu projeto se for diferente.
+      # Alteração Chave: O 'working-directory' foi corrigido para 'pick2me-app'
       - name: Install dependencies
         run: npm install
         working-directory: ./pick2me-app 
@@ -52,11 +51,11 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # Carregar o artefacto da pasta de compilação (build) que está dentro da subpasta do projeto
+      # Carregar o artefacto da pasta de compilação (build) que está dentro da sua pasta 'pick2me-app'
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # O caminho agora aponta para a pasta 'build' dentro da sua pasta do projeto
+          # O caminho agora aponta para a pasta 'build' dentro da sua pasta 'pick2me-app'
           path: './pick2me-app/build'
 
       # Publicar no GitHub Pages
