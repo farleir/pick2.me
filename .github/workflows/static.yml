@@ -1,0 +1,63 @@
+# Fluxo de trabalho para publicar conteúdo estático no GitHub Pages
+name: Deploy static content to Pages
+
+on:
+  # Executa em pushes para o ramo principal (main)
+  push:
+    branches: ["main"]
+
+  # Permite que você execute este fluxo de trabalho manualmente a partir do separador Actions
+  workflow_dispatch:
+
+# Define as permissões do GITHUB_TOKEN para permitir a publicação no GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Permite apenas uma publicação concorrente, ignorando execuções em fila.
+# No entanto, NÃO cancela publicações em andamento para garantir que terminem.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Trabalho único de publicação
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      # Passo Adicional: Configurar o ambiente Node.js para compilar a aplicação React
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20 # Pode ajustar para a versão do Node.js que usa no seu projeto
+
+      # Passo Adicional: Instalar as dependências do projeto
+      - name: Install dependencies
+        run: npm install
+
+      # Passo Adicional: Compilar a aplicação React
+      - name: Build
+        run: npm run build # Este comando executa o script "build" do seu package.json
+
+      # Configurar o GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # Alteração Chave: Carregar o artefacto da pasta de compilação (build)
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Carrega apenas o conteúdo da pasta 'build', que é o resultado da compilação do React
+          path: './build'
+
+      # Publicar no GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
