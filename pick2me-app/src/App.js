@@ -60,11 +60,13 @@ function App() {
   useEffect(() => {
     const initialBotMessage = {
       id: 'initial_bot_msg_' + Date.now(),
-      text: "Olá! Escolher um produto novo pode ser complicado com tantas opções, funções e preços diferentes, não é? Eu sou o Pick2Me e estou aqui para simplificar isso. 😊 Para começar, me diga algum produto ou categoria que tem em mente para pesquisar.",
+      text: "Olá! Escolher um produto novo pode ser complicado com tantas opções, funções e preços diferentes, não é? Eu sou o Pick2Me e estou aqui para simplificar isso para si. 😊 Para começar, diga-me qual produto ou categoria tem em mente.",
       sender: 'bot',
       type: 'text',
     };
     setMessages([initialBotMessage]);
+    // **CORREÇÃO:** Adiciona a mensagem inicial ao histórico da conversa para dar contexto à IA desde o início.
+    chatHistoryRef.current.push({ role: "model", parts: [{ text: initialBotMessage.text }] });
   }, []);
 
   // Handler para mudança no input
@@ -150,7 +152,7 @@ function App() {
     const systemInstruction = {
       role: "user",
       parts: [{text: `Você é 'Pick2Me', um chatbot consultor de compras amigável, empático e especialista.
-1.  **Tom de Voz e Personalidade:** Seu papel é ser um guia tranquilizador num mundo de compras confuso. Comece reconhecendo a dificuldade do utilizador: a sobrecarga de opções, a complexidade das funções e a variação de preços. Use uma linguagem como "Sei que escolher pode ser complicado com tantas opções, mas estou aqui para ajudar" ou "Vamos navegar juntos por este mundo de opções para encontrar o ideal para você".
+1.  **Tom de Voz e Personalidade:** O seu papel é ser um guia tranquilizador num mundo de compras confuso. Comece reconhecendo a dificuldade do utilizador: a sobrecarga de opções, a complexidade das funções e a variação de preços. Use uma linguagem como "Sei que escolher pode ser complicado com tantas opções, mas estou aqui para ajudar" ou "Vamos navegar juntos por este mundo de opções para encontrar o ideal para si".
 2.  **Objetivo Principal:** Ajudar utilizadores a refinar suas necessidades e, se possível, identificar MODELOS ESPECÍFICOS de produtos que se encaixem perfeitamente no que eles procuram.
 3.  **Coleta de Detalhes:** Seja um bom ouvinte. Se a descrição for vaga (ex: 'quero um telemóvel'), faça perguntas abertas e guiadas para entender o que realmente importa para o utilizador. Pergunte sobre orçamento, para que ele vai usar o produto, funcionalidades indispensáveis, e marcas que ele gosta ou não.
 4.  **Sugestão de Busca de Modelos:** APENAS QUANDO sentir que tem detalhes suficientes E/OU um ou mais NOMES DE MODELOS ESPECÍFICOS identificados, confirme o seu entendimento de forma clara. Sugira então procurar mais informações sobre esses modelos usando a tag: '[BUSCAR_MODELOS_PARA: Nome do Modelo 1, Nome do Modelo 2, ...]'.
@@ -199,12 +201,13 @@ Mantenha sempre as respostas em português.`}]
       if (modelList.length === 0) {
           throw new Error("Nenhum nome de modelo válido foi fornecido para a busca.");
       }
+      // **CORREÇÃO:** O link de exemplo foi corrigido para ser um URL genérico e válido, evitando confusão da IA.
       const modelInfoPrompt = `Para cada um dos seguintes modelos de produtos: ${modelList.join(', ')}, forneça:
 - Nome do Modelo (confirme o nome).
 - Um breve resumo das suas características principais (2-3 pontos).
 - Uma faixa de preço típica simulada (ex: 800€ - 950€).
-- Um link de exemplo para uma página de produto ou review (ex: https://www.fabricante.com/modelo ou https://www.reviews.com/modelo-review).
-Formate a resposta em português como uma lista numerada para cada modelo: 'Aqui estão algumas informações sobre os modelos que encontrei:\\n\\n1. **[Nome do Modelo]**\\n   *Características Principais:* [Breve lista ou descrição]\\n   *Faixa de Preço Típica (Simulada):* [Preço]\\n   *Link Exemplo:* https://www.dicionarioinformal.com.br/exemplos/d%C3%AA/\\n\\n2. ...'`;
+- Um link de exemplo para uma página de produto ou review. Forneça o URL completo e direto, como em 'https://www.exemplo.com/produto'.
+Formate a resposta em português como uma lista numerada para cada modelo: 'Aqui estão algumas informações sobre os modelos que encontrei:\\n\\n1. **[Nome do Modelo]**\\n   *Características Principais:* [Breve lista ou descrição]\\n   *Faixa de Preço Típica (Simulada):* [Preço]\\n   *Link Exemplo:* https://www.exemplo.com/produto\\n\\n2. ...'`;
       
       const payload = { contents: [{ role: "user", parts: [{ text: modelInfoPrompt }] }], generationConfig: {} };
       const apiKey = "AIzaSyDSEfpHWXVpGMAvcsCeAMKXe3NKEiLIl0k"; 
@@ -285,7 +288,10 @@ Formate a resposta em português como uma lista numerada para cada modelo: 'Aqui
 
   // Função para renderizar texto formatado (Markdown simples)
   const renderFormattedText = (text) => {
-    let html = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
+    // **CORREÇÃO:** Pré-processa o erro específico da IA de [url](url) para apenas url
+    let correctedText = text.replace(/\[(https?:\/\/[^\]]+)\]\(\1\)/g, '$1');
+
+    let html = correctedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
     html = html.replace(/(https?:\/\/[^\s)]+)/g, (matchedURL) => {
         let href = matchedURL;
         let displayedText = matchedURL;
@@ -314,7 +320,7 @@ Formate a resposta em português como uma lista numerada para cada modelo: 'Aqui
           <div className="p-2 bg-indigo-700 rounded-full"> <BotIcon /> </div>
           <div>
             <h1 className="text-lg sm:text-xl font-semibold">Pick2.me Assistente</h1>
-            <p className="text-xs sm:text-sm text-indigo-200">Seu guia de compras inteligente</p>
+            <p className="text-xs sm:text-sm text-indigo-200">O seu guia de compras inteligente</p>
           </div>
         </header>
 
@@ -357,7 +363,7 @@ Formate a resposta em português como uma lista numerada para cada modelo: 'Aqui
                   {msg.actions.map(action => (
                     <button
                       key={action.id}
-                      onClick={action.handler} 
+                      onClick={() => handleActionClick(action.id, msg.text)} 
                       className="text-xs bg-teal-500 hover:bg-teal-600 text-white py-1.5 px-3 rounded-lg shadow-md disabled:bg-gray-400 flex items-center"
                       disabled={isProcessingAction} 
                     >
@@ -374,7 +380,7 @@ Formate a resposta em português como uma lista numerada para cada modelo: 'Aqui
                <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-indigo-500 flex items-center justify-center mr-2 sm:mr-3 shadow-md"> <BotIcon /> </div>
               <div className="max-w-xs px-4 py-3 rounded-2xl shadow-md bg-slate-600 text-slate-300 rounded-bl-lg">
                 <p className="text-sm sm:text-base italic">
-                  {isProcessingAction ? 'Processando sua ação...' : isFetchingModelInfo ? 'Buscando informações dos modelos...' : 'Digitando...'}
+                  {isProcessingAction ? 'Processando a sua ação...' : isFetchingModelInfo ? 'Buscando informações dos modelos...' : 'Digitando...'}
                 </p>
               </div>
             </div>
@@ -390,7 +396,7 @@ Formate a resposta em português como uma lista numerada para cada modelo: 'Aqui
               value={inputValue}
               onChange={handleInputChange}
               onKeyPress={(e) => e.key === 'Enter' && !isBotTyping && !isFetchingModelInfo && !isProcessingAction && sendMessage()}
-              placeholder="Digite sua mensagem..."
+              placeholder="Digite a sua mensagem..."
               className="flex-grow p-3 sm:p-3.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all bg-slate-700 text-slate-100 placeholder-slate-400 text-sm sm:text-base"
               disabled={isBotTyping || isFetchingModelInfo || isProcessingAction} 
             />
