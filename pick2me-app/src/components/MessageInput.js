@@ -9,17 +9,17 @@ const MessageInput = ({ inputValue, onInputChange, onSendMessage, isProcessing }
   };
 
   return (
-    <footer className="bg-slate-800 border-t border-slate-700 p-3 sm:p-4 rounded-b-none sm:rounded-b-xl">
+    <footer className="bg-slate-100 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-3 sm:p-4 rounded-b-none sm:rounded-b-xl transition-colors duration-300">
       <div className="flex items-center space-x-2 sm:space-x-3">
         <input
           type="text"
-          id="user-message-input" 
-          name="user_message"     
+          id="user-message-input"
+          name="user_message"
           value={inputValue}
           onChange={onInputChange}
           onKeyPress={handleKeyPress}
-          placeholder="Digite aqui..."
-          className="flex-grow p-3 sm:p-3.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all bg-slate-700 text-slate-100 placeholder-slate-400 text-sm sm:text-base"
+          placeholder="Digite sua mensagem..."
+          className="flex-grow p-3 sm:p-3.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-400 text-sm sm:text-base"
           disabled={isProcessing}
         />
         <button
