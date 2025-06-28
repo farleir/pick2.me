@@ -1,7 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class', // Ativa a estratégia de classe para o modo escuro
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}", // Diz ao Tailwind para olhar para todos os ficheiros dentro da pasta 'src'
+    "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {},
