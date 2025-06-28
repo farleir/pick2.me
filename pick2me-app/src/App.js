@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Header from './components/Header';
 import Message from './components/Message';
 import MessageInput from './components/MessageInput';
+import QuickSuggestions from './components/QuickSuggestions'; // <-- Importa o novo componente
 import { BotIcon, SparkleIcon } from './components/Icons';
 import { callConversationAPI, fetchModelInformationAPI, callActionAPI } from './services/geminiAPI';
 import { trackEvent } from './services/analytics';
@@ -12,6 +13,7 @@ function App() {
   const [isBotTyping, setIsBotTyping] = useState(false);
   const [isFetchingModelInfo, setIsFetchingModelInfo] = useState(false);
   const [isProcessingAction, setIsProcessingAction] = useState(false);
+  const [showQuickSuggestions, setShowQuickSuggestions] = useState(true); // <-- Novo estado para controlar os botões
 
   const chatHistoryRef = useRef([]);
   const messagesEndRef = useRef(null);
@@ -25,7 +27,7 @@ function App() {
   useEffect(() => {
     const initialBotMessage = {
       id: 'initial_bot_msg_' + Date.now(),
-      text: "Olá! Escolher um novo produto pode ser complicado com tantas opções, funções e preços diferentes. O Pick2Me ajuda a simplificar sua escolha de qualquer produto! 😊 Para começar, diga qual produto você tem em mente?",
+      text: "Olá! Escolher um produto novo pode ser complicado com tantas opções, funções e preços diferentes, não é? Eu sou o Pick2Me e estou aqui para simplificar isso para você. 😊 Para começar, me diga qual produto ou categoria você tem em mente, ou clique em uma das sugestões abaixo.",
       sender: 'bot',
       type: 'text',
     };
@@ -43,10 +45,11 @@ function App() {
 
     setIsProcessingAction(true);
     let prompt = "";
+    // **PROMPTS MELHORADOS AQUI**
     if (actionType === 'summarize') {
-        prompt = `Considere as seguintes informações sobre modelos de produtos:\n\n${suggestionsText}\n\nEscolha o primeiro modelo da lista. Imagine que leu várias avaliações online para ele. Com base no que é típico para este tipo de modelo, gere um breve resumo dos prós e contras que os utilizadores provavelmente mencionariam. Indique o nome do modelo que está a resumir. Formate como: '**Resumo de Avaliações para [Nome do Modelo Escolhido]:**\n\n**Prós Típicos:**\n- [Pró 1]\n- [Pró 2]\n\n**Contras Típicos:**\n- [Contra 1]\n- [Contra 2]' Em Português do Brasil.`;
+        prompt = `Analise **cada modelo** na lista de produtos a seguir. Para **cada um**, imagine que leu várias avaliações online e gere um breve resumo dos prós e contras que os utilizadores provavelmente mencionariam. Apresente os resumos separadamente para cada modelo.\n\nLISTA:\n${suggestionsText}`;
     } else if (actionType === 'compare') {
-        prompt = `Analise as seguintes informações sobre modelos de produtos e crie uma breve comparação entre eles, destacando os pontos fortes de cada um e para que tipo de utilizador seriam mais adequados. As informações são:\n\n${suggestionsText}\n\nApresente a comparação de forma clara e concisa, em Português do Brasil. Use Markdown para formatar (negrito para nomes de modelos, listas para características).`;
+        prompt = `Analise **todos os modelos** na lista de produtos a seguir e crie uma comparação detalhada entre eles, destacando os pontos fortes de cada um, para que tipo de utilizador seriam mais adequados, e uma conclusão sobre qual oferece o melhor custo-benefício geral. As informações são:\n\n${suggestionsText}`;
     }
     
     const actionText = await callActionAPI(prompt);
@@ -62,16 +65,16 @@ function App() {
     };
     setMessages(prev => [...prev, actionMessage]);
   };
+  
+  // Função unificada para lidar com o envio de mensagens (do input ou dos botões)
+  const processMessage = async (messageText) => {
+    setShowQuickSuggestions(false); // Esconde os botões após a primeira interação
 
-  const sendMessage = async () => {
-    if (inputValue.trim() === '') return;
-
-    trackEvent('send_message', { message_length: inputValue.length });
+    trackEvent('send_message', { message_length: messageText.length });
     
-    const userMessage = { id: 'user_msg_' + Date.now(), text: inputValue, sender: 'user' };
+    const userMessage = { id: 'user_msg_' + Date.now(), text: messageText, sender: 'user' };
     setMessages(prev => [...prev, userMessage]);
-    chatHistoryRef.current.push({ role: "user", parts: [{ text: userMessage.text }] });
-    setInputValue('');
+    chatHistoryRef.current.push({ role: "user", parts: [{ text: messageText }] });
     
     setIsBotTyping(true);
     const botResponseText = await callConversationAPI([...chatHistoryRef.current]);
@@ -113,6 +116,17 @@ function App() {
     }
   };
 
+  const sendMessage = () => {
+    if (inputValue.trim() === '') return;
+    processMessage(inputValue);
+    setInputValue('');
+  };
+  
+  const handleSuggestionClick = (suggestion) => {
+      processMessage(suggestion);
+  };
+
+
   const isProcessing = isBotTyping || isFetchingModelInfo || isProcessingAction;
 
   return (
@@ -144,6 +158,9 @@ function App() {
           )}
           <div ref={messagesEndRef} />
         </div>
+        
+        {/* Renderiza os botões de sugestão apenas no início */}
+        {showQuickSuggestions && <QuickSuggestions onSuggestionClick={handleSuggestionClick} />}
 
         <MessageInput
           inputValue={inputValue}
