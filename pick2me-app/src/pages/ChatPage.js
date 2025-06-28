@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Message from '../components/Message';
 import QuickSuggestions from '../components/QuickSuggestions';
+import MessageInput from '../components/MessageInput'; // <-- CORREÇÃO: Linha de importação adicionada
 import { BotIcon, SparkleIcon } from '../components/Icons';
 import { callConversationAPI, fetchModelInformationAPI, callActionAPI } from '../services/geminiAPI';
 import { trackEvent } from '../services/analytics';
