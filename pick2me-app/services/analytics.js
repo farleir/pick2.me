@@ -10,3 +10,4 @@ export const trackEvent = (eventName, eventParams) => {
     console.warn('Google Analytics gtag function not found.');
   }
 };
+
