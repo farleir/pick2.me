@@ -13,10 +13,12 @@ const MessageInput = ({ inputValue, onInputChange, onSendMessage, isProcessing }
       <div className="flex items-center space-x-2 sm:space-x-3">
         <input
           type="text"
+          id="user-message-input" 
+          name="user_message"     
           value={inputValue}
           onChange={onInputChange}
           onKeyPress={handleKeyPress}
-          placeholder="Digite sua mensagem..."
+          placeholder="Digite aqui..."
           className="flex-grow p-3 sm:p-3.5 border border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all bg-slate-700 text-slate-100 placeholder-slate-400 text-sm sm:text-base"
           disabled={isProcessing}
         />

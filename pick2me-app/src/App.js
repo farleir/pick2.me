@@ -25,7 +25,7 @@ function App() {
   useEffect(() => {
     const initialBotMessage = {
       id: 'initial_bot_msg_' + Date.now(),
-      text: "Olá! Escolher um produto novo pode ser complicado com tantas opções, funções e preços diferentes, não é? Eu sou o Pick2Me e estou aqui para simplificar isso para você. 😊 Para começar, me diga qual produto ou categoria você tem em mente.",
+      text: "Olá! Escolher um novo produto pode ser complicado com tantas opções, funções e preços diferentes. O Pick2Me ajuda a simplificar sua escolha de qualquer produto! 😊 Para começar, diga qual produto você tem em mente?",
       sender: 'bot',
       type: 'text',
     };
